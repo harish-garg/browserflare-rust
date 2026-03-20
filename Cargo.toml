@@ -6,7 +6,7 @@ description = "Rust client for Cloudflare Browser Rendering APIs (crawl, screens
 license = "MIT"
 keywords = ["cloudflare", "browser-rendering", "web-scraping", "screenshot", "pdf"]
 categories = ["api-bindings", "web-programming"]
-# repository = "https://github.com/harish-garg/browserflare-rust"
+repository = "https://github.com/harish-garg/browserflare-rust"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
