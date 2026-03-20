@@ -18,7 +18,7 @@ pub use config::{
     SCREENSHOT_FORMATS, PDF_PAGE_FORMATS, WAIT_UNTIL_OPTIONS,
 };
 pub use payloads::{
-    CrawlPayload, ScreenshotPayload, PdfPayload,
+    CrawlPayload, ScreenshotPayload, ScreenshotOptions, PdfPayload,
     CrawlResult, CrawlRecord, ScreenshotResult, PdfResult,
     Viewport, WaitForSelector, GotoOptions, JsonOptions, PdfOptions, PdfMargin,
     CfApiResponse,

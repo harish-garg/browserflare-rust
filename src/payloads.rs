@@ -70,7 +70,7 @@ pub struct PdfOptions {
 
 // ── Crawl payload ───────────────────────────────────────────────────────
 
-#[derive(Debug, Clone, Serialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct CrawlPayload {
     pub url: String,
@@ -110,10 +110,7 @@ pub struct CrawlPayload {
 
 #[derive(Debug, Clone, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct ScreenshotPayload {
-    pub url: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub viewport: Option<Viewport>,
+pub struct ScreenshotOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub full_page: Option<bool>,
     #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
@@ -121,13 +118,23 @@ pub struct ScreenshotPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub quality: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub omit_background: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ScreenshotPayload {
+    pub url: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub viewport: Option<Viewport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub screenshot_options: Option<ScreenshotOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub selector: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wait_for_selector: Option<WaitForSelector>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub goto_options: Option<GotoOptions>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub omit_background: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_agent: Option<String>,
 }
@@ -226,15 +233,24 @@ mod tests {
     }
 
     #[test]
-    fn screenshot_payload_renames_type_field() {
+    fn screenshot_payload_nests_options_under_screenshot_options() {
         let payload = ScreenshotPayload {
             url: "https://example.com".into(),
-            format: Some("jpeg".into()),
+            screenshot_options: Some(ScreenshotOptions {
+                format: Some("jpeg".into()),
+                full_page: Some(true),
+                quality: Some(80),
+                omit_background: None,
+            }),
             ..Default::default()
         };
         let json = serde_json::to_value(&payload).unwrap();
-        assert_eq!(json["type"], "jpeg");
-        assert!(json.get("format").is_none());
+        assert_eq!(json["screenshotOptions"]["type"], "jpeg");
+        assert_eq!(json["screenshotOptions"]["fullPage"], true);
+        assert_eq!(json["screenshotOptions"]["quality"], 80);
+        assert!(json.get("fullPage").is_none());
+        assert!(json.get("type").is_none());
+        assert!(json.get("quality").is_none());
     }
 
     #[test]
