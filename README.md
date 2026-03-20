@@ -4,11 +4,13 @@ Rust client for [Cloudflare Browser Rendering](https://developers.cloudflare.com
 
 Supports crawling, screenshots, and PDF generation.
 
+> Prefer a GUI App? Look at our desktop app - [browserflare.xyz](https://browserflare.xyz/).
+
 ## Installation
 
 ```toml
 [dependencies]
-browserflare = "0.1"
+browserflare = "0.1.1"
 tokio = { version = "1", features = ["full"] }
 reqwest = "0.12"
 ```
@@ -33,11 +35,11 @@ use browserflare::{ScreenshotPayload, take_screenshot, save_screenshot};
 async fn main() -> browserflare::Result<()> {
     let client = reqwest::Client::new();
     let payload = ScreenshotPayload {
-        url: "https://example.com".into(),
+        url: "https://browserflare.xyz".into(),
         ..Default::default()
     };
     let result = take_screenshot(&client, &payload).await?;
-    save_screenshot("https://example.com", &result.bytes, &result.content_type, None)?;
+    save_screenshot("https://browserflare.xyz", &result.bytes, &result.content_type, None)?;
     Ok(())
 }
 ```
@@ -51,7 +53,7 @@ use browserflare::{CrawlPayload, start_crawl, poll_until_complete, save_results}
 async fn main() -> browserflare::Result<()> {
     let client = reqwest::Client::new();
     let payload = CrawlPayload {
-        url: "https://example.com".into(),
+        url: "https://browserflare.xyz".into(),
         limit: Some(10),
         formats: Some(vec!["markdown".into()]),
         ..Default::default()
@@ -72,11 +74,11 @@ use browserflare::{PdfPayload, generate_pdf, save_pdf};
 async fn main() -> browserflare::Result<()> {
     let client = reqwest::Client::new();
     let payload = PdfPayload {
-        url: Some("https://example.com".into()),
+        url: Some("https://browserflare.xyz".into()),
         ..Default::default()
     };
     let result = generate_pdf(&client, &payload).await?;
-    save_pdf("https://example.com", &result.bytes, None)?;
+    save_pdf("https://browserflare.xyz", &result.bytes, None)?;
     Ok(())
 }
 ```
