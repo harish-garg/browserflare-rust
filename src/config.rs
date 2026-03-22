@@ -114,3 +114,12 @@ pub fn get_pdf_api_config() -> Result<ApiConfig> {
         headers: build_headers(&api_token)?,
     })
 }
+
+/// Build an `ApiConfig` pointing at an arbitrary base URL with a dummy bearer token.
+/// Useful for testing against a mock HTTP server.
+pub fn test_config(base_url: &str) -> ApiConfig {
+    ApiConfig {
+        base_url: base_url.to_string(),
+        headers: build_headers("test-token").expect("valid test headers"),
+    }
+}

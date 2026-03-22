@@ -204,11 +204,13 @@ pub struct CrawlRecord {
     pub extra: Map<String, Value>,
 }
 
+#[derive(Debug)]
 pub struct ScreenshotResult {
     pub bytes: Vec<u8>,
     pub content_type: String,
 }
 
+#[derive(Debug)]
 pub struct PdfResult {
     pub bytes: Vec<u8>,
     pub content_type: String,

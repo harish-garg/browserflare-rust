@@ -3,17 +3,20 @@ use std::time::Duration;
 use reqwest::Client;
 use serde_json::Value;
 
-use crate::config::{get_api_config, FAILURE_STATUSES, TERMINAL_STATUSES};
+use crate::config::{ApiConfig, FAILURE_STATUSES, TERMINAL_STATUSES};
 use crate::error::{BrowserflareError, Result};
 use crate::payloads::{CfApiResponse, CrawlPayload, CrawlResult};
 
 type StatusCallback<'a> = Option<&'a dyn Fn(&str, &CrawlResult)>;
 
-pub async fn start_crawl(client: &Client, payload: &CrawlPayload) -> Result<String> {
-    let config = get_api_config()?;
+pub async fn start_crawl(
+    client: &Client,
+    config: &ApiConfig,
+    payload: &CrawlPayload,
+) -> Result<String> {
     let response = client
         .post(&config.base_url)
-        .headers(config.headers)
+        .headers(config.headers.clone())
         .json(payload)
         .send()
         .await?;
@@ -36,11 +39,14 @@ pub async fn start_crawl(client: &Client, payload: &CrawlPayload) -> Result<Stri
     }
 }
 
-pub async fn get_crawl_status(client: &Client, job_id: &str) -> Result<CrawlResult> {
-    let config = get_api_config()?;
+pub async fn get_crawl_status(
+    client: &Client,
+    config: &ApiConfig,
+    job_id: &str,
+) -> Result<CrawlResult> {
     let response = client
         .get(format!("{}/{job_id}", config.base_url))
-        .headers(config.headers)
+        .headers(config.headers.clone())
         .send()
         .await?;
 
@@ -59,12 +65,12 @@ pub async fn get_crawl_status(client: &Client, job_id: &str) -> Result<CrawlResu
 
 pub async fn get_crawl_results_paginated(
     client: &Client,
+    config: &ApiConfig,
     job_id: &str,
     limit_per_page: u32,
     status_filter: Option<&str>,
     on_progress: Option<&dyn Fn(usize, u64)>,
 ) -> Result<CrawlResult> {
-    let config = get_api_config()?;
     let mut all_records = Vec::new();
     let mut cursor: Option<String> = None;
     let mut total: Option<u64> = None;
@@ -124,11 +130,14 @@ pub async fn get_crawl_results_paginated(
     Ok(result)
 }
 
-pub async fn cancel_crawl(client: &Client, job_id: &str) -> Result<()> {
-    let config = get_api_config()?;
+pub async fn cancel_crawl(
+    client: &Client,
+    config: &ApiConfig,
+    job_id: &str,
+) -> Result<()> {
     let response = client
         .delete(format!("{}/{job_id}", config.base_url))
-        .headers(config.headers)
+        .headers(config.headers.clone())
         .send()
         .await?;
 
@@ -145,12 +154,13 @@ pub async fn cancel_crawl(client: &Client, job_id: &str) -> Result<()> {
 
 pub async fn poll_until_complete(
     client: &Client,
+    config: &ApiConfig,
     job_id: &str,
     interval_secs: u64,
     on_status: StatusCallback<'_>,
 ) -> Result<CrawlResult> {
     loop {
-        let result = get_crawl_status(client, job_id).await?;
+        let result = get_crawl_status(client, config, job_id).await?;
         let status = result.status.as_str();
 
         if let Some(cb) = on_status {

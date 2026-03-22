@@ -1,17 +1,17 @@
 use reqwest::Client;
 
-use crate::config::get_screenshot_api_config;
+use crate::config::ApiConfig;
 use crate::error::{BrowserflareError, Result};
 use crate::payloads::{ScreenshotPayload, ScreenshotResult};
 
 pub async fn take_screenshot(
     client: &Client,
+    config: &ApiConfig,
     payload: &ScreenshotPayload,
 ) -> Result<ScreenshotResult> {
-    let config = get_screenshot_api_config()?;
     let response = client
         .post(&config.base_url)
-        .headers(config.headers)
+        .headers(config.headers.clone())
         .json(payload)
         .send()
         .await?;

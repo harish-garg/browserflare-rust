@@ -1,14 +1,17 @@
 use reqwest::Client;
 
-use crate::config::get_pdf_api_config;
+use crate::config::ApiConfig;
 use crate::error::{BrowserflareError, Result};
 use crate::payloads::{PdfPayload, PdfResult};
 
-pub async fn generate_pdf(client: &Client, payload: &PdfPayload) -> Result<PdfResult> {
-    let config = get_pdf_api_config()?;
+pub async fn generate_pdf(
+    client: &Client,
+    config: &ApiConfig,
+    payload: &PdfPayload,
+) -> Result<PdfResult> {
     let response = client
         .post(&config.base_url)
-        .headers(config.headers)
+        .headers(config.headers.clone())
         .json(payload)
         .send()
         .await?;

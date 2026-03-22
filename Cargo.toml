@@ -1,6 +1,6 @@
 [package]
 name = "browserflare"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 description = "Rust client for Cloudflare Browser Rendering APIs (crawl, screenshot, PDF)"
 license = "MIT"
@@ -18,3 +18,7 @@ thiserror = "2"
 chrono = "0.4"
 regex = "1"
 dotenvy = "0.15"
+
+[dev-dependencies]
+wiremock = "0.6"
+tempfile = "3"

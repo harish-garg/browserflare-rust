@@ -5,6 +5,7 @@ use reqwest::Client;
 use serde_json::{Map, Value};
 
 use crate::api::{get_crawl_results_paginated, poll_until_complete, start_crawl};
+use crate::config::ApiConfig;
 use crate::error::{BrowserflareError, Result};
 use crate::jobs::{add_job, update_job};
 use crate::output::save_results;
@@ -55,6 +56,7 @@ pub fn load_urls(file_path: &Path) -> Result<Vec<String>> {
 
 pub async fn run_batch(
     client: &Client,
+    config: &ApiConfig,
     urls_file: &Path,
     base_payload: &CrawlPayload,
     wait: bool,
@@ -90,7 +92,7 @@ pub async fn run_batch(
             });
         }
 
-        let job_id = match start_crawl(client, &payload).await {
+        let job_id = match start_crawl(client, config, &payload).await {
             Ok(id) => id,
             Err(err) => {
                 if let Some(cb) = on_event {
@@ -126,7 +128,7 @@ pub async fn run_batch(
                 });
             }
 
-            match poll_until_complete(client, &job_id, 3, None).await {
+            match poll_until_complete(client, config, &job_id, 3, None).await {
                 Err(BrowserflareError::CrawlFailed { status, .. }) => {
                     if let Some(cb) = on_event {
                         cb(BatchEvent::CrawlEnded {
@@ -156,7 +158,7 @@ pub async fn run_batch(
 
                     if result_total > page_count as u64 {
                         if let Ok(full) =
-                            get_crawl_results_paginated(client, &job_id, 100, None, None).await
+                            get_crawl_results_paginated(client, config, &job_id, 100, None, None).await
                         {
                             result = full;
                         }

@@ -16,6 +16,7 @@ pub use config::{
     ApiConfig, TERMINAL_STATUSES, SUCCESS_STATUSES, FAILURE_STATUSES,
     RESOURCE_TYPES, DEFAULT_REJECT_RESOURCES, OUTPUT_FORMATS,
     SCREENSHOT_FORMATS, PDF_PAGE_FORMATS, WAIT_UNTIL_OPTIONS,
+    get_api_config, get_screenshot_api_config, get_pdf_api_config, test_config,
 };
 pub use payloads::{
     CrawlPayload, ScreenshotPayload, ScreenshotOptions, PdfPayload,
