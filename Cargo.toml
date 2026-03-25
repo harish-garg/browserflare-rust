@@ -1,8 +1,8 @@
 [package]
 name = "browserflare"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
-description = "Rust client for Cloudflare Browser Rendering APIs (crawl, screenshot, PDF)"
+description = "Rust client for Cloudflare Browser Rendering APIs (crawl, screenshot, PDF, content)"
 license = "MIT"
 keywords = ["cloudflare", "browser-rendering", "web-scraping", "screenshot", "pdf"]
 categories = ["api-bindings", "web-programming"]

@@ -4,6 +4,7 @@ pub mod payloads;
 pub mod api;
 pub mod screenshot_api;
 pub mod pdf_api;
+pub mod content_api;
 pub mod output;
 pub mod screenshot_output;
 pub mod pdf_output;
@@ -16,17 +17,18 @@ pub use config::{
     ApiConfig, TERMINAL_STATUSES, SUCCESS_STATUSES, FAILURE_STATUSES,
     RESOURCE_TYPES, DEFAULT_REJECT_RESOURCES, OUTPUT_FORMATS,
     SCREENSHOT_FORMATS, PDF_PAGE_FORMATS, WAIT_UNTIL_OPTIONS,
-    get_api_config, get_screenshot_api_config, get_pdf_api_config, test_config,
+    get_api_config, get_screenshot_api_config, get_pdf_api_config, get_content_api_config, test_config,
 };
 pub use payloads::{
-    CrawlPayload, ScreenshotPayload, ScreenshotOptions, PdfPayload,
-    CrawlResult, CrawlRecord, ScreenshotResult, PdfResult,
+    CrawlPayload, ScreenshotPayload, ScreenshotOptions, PdfPayload, ContentPayload,
+    CrawlResult, CrawlRecord, ScreenshotResult, PdfResult, ContentResult, ContentMeta,
     Viewport, WaitForSelector, GotoOptions, JsonOptions, PdfOptions, PdfMargin,
     CfApiResponse,
 };
 pub use api::{start_crawl, get_crawl_status, get_crawl_results_paginated, cancel_crawl, poll_until_complete};
 pub use screenshot_api::take_screenshot;
 pub use pdf_api::generate_pdf;
+pub use content_api::fetch_content;
 pub use output::{
     sanitize_filename, save_results, load_result, search_results,
     get_statistics, diff_crawls, SearchMatch, CrawlStatistics, CrawlDiff,

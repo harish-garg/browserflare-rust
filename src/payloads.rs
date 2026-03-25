@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::{Map, Value};
 
 // ── Shared sub-structs ──────────────────────────────────────────────────
@@ -13,8 +13,11 @@ pub struct Viewport {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct WaitForSelector {
     pub selector: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timeout: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -160,6 +163,85 @@ pub struct PdfPayload {
     pub user_agent: Option<String>,
 }
 
+// ── Content payload ────────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ContentPayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub html: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub viewport: Option<Viewport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub goto_options: Option<GotoOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_selector: Option<WaitForSelector>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_extra_http_headers: Option<Map<String, Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cookies: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_javascript_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub emulate_media_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub best_attempt: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_script_tag: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_style_tag: Option<Vec<Value>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ContentMeta {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ContentResult {
+    pub success: bool,
+    pub result: Option<String>,
+    pub errors: Option<Vec<Value>>,
+    pub meta: Option<ContentMeta>,
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────
+
+fn deserialize_cursor<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value: Option<Value> = Option::deserialize(deserializer)?;
+    Ok(value.and_then(|v| match v {
+        Value::String(s) if s.is_empty() => None,
+        Value::String(s) => Some(s),
+        Value::Number(n) => Some(n.to_string()),
+        Value::Null => None,
+        other => Some(other.to_string()),
+    }))
+}
+
 // ── Response types ──────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -179,7 +261,7 @@ pub struct CrawlResult {
     pub records: Vec<CrawlRecord>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total: Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, deserialize_with = "deserialize_cursor", skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub browser_seconds_used: Option<f64>,
