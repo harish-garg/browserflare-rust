@@ -1,10 +1,10 @@
 [package]
 name = "browserflare"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
-description = "Rust client for Cloudflare Browser Rendering APIs (crawl, screenshot, PDF, content)"
+description = "Rust client for Cloudflare Browser Rendering APIs"
 license = "MIT"
-keywords = ["cloudflare", "browser-rendering", "web-scraping", "screenshot", "pdf"]
+keywords = ["cloudflare", "browser-rendering", "web-scraping",]
 categories = ["api-bindings", "web-programming"]
 repository = "https://github.com/harish-garg/browserflare-rust"
 homepage = "https://browserflare.xyz/"
