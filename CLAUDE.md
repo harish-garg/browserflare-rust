@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Rust client library for [Cloudflare Browser Rendering](https://developers.cloudflare.com/browser-rendering/) APIs (crawl, screenshot, PDF, content). Published to crates.io as `browserflare`.
+Rust client library for [Cloudflare Browser Rendering](https://developers.cloudflare.com/browser-rendering/) APIs (crawl, screenshot, PDF, content, markdown, snapshot, scrape, json, links). Published to crates.io as `browserflare`.
 
 ## Build & Test Commands
 
 ```powershell
 cargo build                        # Build the library
-cargo test                         # Run all 53 tests
+cargo test                         # Run all 77 tests
 cargo test --test crawl_api        # Run a single test file
 cargo test test_name               # Run a specific test by name
 cargo test -- --nocapture          # Show println output during tests
@@ -29,6 +29,11 @@ The crate is organized into three layers:
    - `screenshot_api.rs` — `take_screenshot`
    - `pdf_api.rs` — `generate_pdf`
    - `content_api.rs` — `fetch_content`
+   - `markdown_api.rs` — `fetch_markdown`
+   - `snapshot_api.rs` — `take_snapshot`
+   - `scrape_api.rs` — `scrape`
+   - `json_api.rs` — `extract_json` (AI-powered structured data extraction)
+   - `links_api.rs` — `fetch_links` (retrieve all links from a webpage)
 
 2. **Persistence layer** — File I/O and job tracking
    - `output.rs` — Save/load crawl results, search, statistics, diff (writes to `output/{job_id}/`)
@@ -47,7 +52,7 @@ Supporting modules:
 
 ### Key Design Pattern: Explicit Config
 
-All API functions take `&ApiConfig` as an explicit parameter (not fetched internally). This was a v0.2.0 breaking change for testability. Production code calls `get_api_config()` / `get_screenshot_api_config()` / `get_pdf_api_config()` / `get_content_api_config()` to build configs from env vars. Tests use `test_config(base_url)` to point at wiremock mock servers.
+All API functions take `&ApiConfig` as an explicit parameter (not fetched internally). This was a v0.2.0 breaking change for testability. Production code calls `get_api_config()` / `get_screenshot_api_config()` / `get_pdf_api_config()` / `get_content_api_config()` / `get_markdown_api_config()` / `get_snapshot_api_config()` / `get_scrape_api_config()` / `get_json_api_config()` / `get_links_api_config()` to build configs from env vars. Tests use `test_config(base_url)` to point at wiremock mock servers.
 
 All API functions also take `&reqwest::Client` by reference — the caller owns the client.
 
@@ -60,7 +65,7 @@ All API functions also take `&reqwest::Client` by reference — the caller owns 
 
 ## Testing Patterns
 
-### Mock HTTP tests (`tests/crawl_api.rs`, `screenshot_api.rs`, `pdf_api.rs`, `content_api.rs`)
+### Mock HTTP tests (`tests/crawl_api.rs`, `screenshot_api.rs`, `pdf_api.rs`, `content_api.rs`, `markdown_api.rs`, `snapshot_api.rs`, `scrape_api.rs`, `json_api.rs`, `links_api.rs`)
 
 Use `wiremock::MockServer` to stand up a local HTTP server, mount response mocks, and pass `test_config(&server.uri())` to API functions.
 

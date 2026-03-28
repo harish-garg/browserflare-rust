@@ -125,6 +125,56 @@ pub fn get_content_api_config() -> Result<ApiConfig> {
     })
 }
 
+pub fn get_snapshot_api_config() -> Result<ApiConfig> {
+    let (account_id, api_token) = get_credentials()?;
+    Ok(ApiConfig {
+        base_url: format!(
+            "https://api.cloudflare.com/client/v4/accounts/{account_id}/browser-rendering/snapshot"
+        ),
+        headers: build_headers(&api_token)?,
+    })
+}
+
+pub fn get_scrape_api_config() -> Result<ApiConfig> {
+    let (account_id, api_token) = get_credentials()?;
+    Ok(ApiConfig {
+        base_url: format!(
+            "https://api.cloudflare.com/client/v4/accounts/{account_id}/browser-rendering/scrape"
+        ),
+        headers: build_headers(&api_token)?,
+    })
+}
+
+pub fn get_json_api_config() -> Result<ApiConfig> {
+    let (account_id, api_token) = get_credentials()?;
+    Ok(ApiConfig {
+        base_url: format!(
+            "https://api.cloudflare.com/client/v4/accounts/{account_id}/browser-rendering/json"
+        ),
+        headers: build_headers(&api_token)?,
+    })
+}
+
+pub fn get_links_api_config() -> Result<ApiConfig> {
+    let (account_id, api_token) = get_credentials()?;
+    Ok(ApiConfig {
+        base_url: format!(
+            "https://api.cloudflare.com/client/v4/accounts/{account_id}/browser-rendering/links"
+        ),
+        headers: build_headers(&api_token)?,
+    })
+}
+
+pub fn get_markdown_api_config() -> Result<ApiConfig> {
+    let (account_id, api_token) = get_credentials()?;
+    Ok(ApiConfig {
+        base_url: format!(
+            "https://api.cloudflare.com/client/v4/accounts/{account_id}/browser-rendering/markdown"
+        ),
+        headers: build_headers(&api_token)?,
+    })
+}
+
 /// Build an `ApiConfig` pointing at an arbitrary base URL with a dummy bearer token.
 /// Useful for testing against a mock HTTP server.
 pub fn test_config(base_url: &str) -> ApiConfig {

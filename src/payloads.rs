@@ -226,6 +226,336 @@ pub struct ContentResult {
     pub meta: Option<ContentMeta>,
 }
 
+// ── Markdown payload ──────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkdownPayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub html: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub viewport: Option<Viewport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub goto_options: Option<GotoOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_selector: Option<WaitForSelector>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_extra_http_headers: Option<Map<String, Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cookies: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_javascript_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub emulate_media_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub best_attempt: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_script_tag: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_style_tag: Option<Vec<Value>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkdownResult {
+    pub success: bool,
+    pub result: Option<String>,
+    pub errors: Option<Vec<Value>>,
+    pub meta: Option<ContentMeta>,
+}
+
+// ── Snapshot payload ──────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct SnapshotPayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub html: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub viewport: Option<Viewport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub screenshot_options: Option<ScreenshotOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub goto_options: Option<GotoOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_selector: Option<WaitForSelector>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_extra_http_headers: Option<Map<String, Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cookies: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_javascript_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub emulate_media_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub best_attempt: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_script_tag: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_style_tag: Option<Vec<Value>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SnapshotResultData {
+    pub screenshot: String,
+    pub content: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SnapshotResult {
+    pub success: bool,
+    pub result: Option<SnapshotResultData>,
+    pub errors: Option<Vec<Value>>,
+}
+
+// ── JSON endpoint payload ────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ResponseFormat {
+    #[serde(rename = "type")]
+    pub format_type: String,
+    pub schema: Value,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CustomAiModel {
+    pub model: String,
+    pub authorization: String,
+}
+
+#[derive(Debug, Clone, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct JsonPayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub html: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prompt: Option<String>,
+    #[serde(rename = "response_format", skip_serializing_if = "Option::is_none")]
+    pub response_format: Option<ResponseFormat>,
+    #[serde(rename = "custom_ai", skip_serializing_if = "Option::is_none")]
+    pub custom_ai: Option<Vec<CustomAiModel>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub viewport: Option<Viewport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub goto_options: Option<GotoOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_selector: Option<WaitForSelector>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_extra_http_headers: Option<Map<String, Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cookies: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_javascript_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub emulate_media_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub best_attempt: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_script_tag: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_style_tag: Option<Vec<Value>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct JsonExtractResult {
+    pub success: bool,
+    pub result: Option<Value>,
+    pub errors: Option<Vec<Value>>,
+}
+
+// ── Links payload ────────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct LinksPayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub html: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub visible_links_only: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exclude_external_links: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub viewport: Option<Viewport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub goto_options: Option<GotoOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_selector: Option<WaitForSelector>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_extra_http_headers: Option<Map<String, Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cookies: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_javascript_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub emulate_media_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub best_attempt: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_script_tag: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_style_tag: Option<Vec<Value>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LinksResult {
+    pub success: bool,
+    pub result: Option<Vec<String>>,
+    pub errors: Option<Vec<Value>>,
+}
+
+// ── Scrape payload ───────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ScrapeElement {
+    pub selector: String,
+}
+
+#[derive(Debug, Clone, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ScrapePayload {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    pub elements: Vec<ScrapeElement>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub viewport: Option<Viewport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub goto_options: Option<GotoOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_selector: Option<WaitForSelector>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_agent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reject_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_resource_types: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_request_pattern: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_extra_http_headers: Option<Map<String, Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cookies: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub set_javascript_enabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub emulate_media_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub best_attempt: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wait_for_timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_script_tag: Option<Vec<Value>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add_style_tag: Option<Vec<Value>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScrapeAttribute {
+    pub name: String,
+    pub value: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScrapeElementResult {
+    pub text: Option<String>,
+    pub html: Option<String>,
+    #[serde(default)]
+    pub attributes: Vec<ScrapeAttribute>,
+    pub height: Option<f64>,
+    pub width: Option<f64>,
+    pub top: Option<f64>,
+    pub left: Option<f64>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScrapeSelectorResult {
+    pub selector: String,
+    pub results: Vec<ScrapeElementResult>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScrapeResult {
+    pub success: bool,
+    pub result: Option<Vec<ScrapeSelectorResult>>,
+    pub errors: Option<Vec<Value>>,
+}
+
 // ── Helpers ─────────────────────────────────────────────────────────────
 
 fn deserialize_cursor<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
