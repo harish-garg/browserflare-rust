@@ -165,7 +165,7 @@ pub async fn run_batch(
                     }
 
                     let page_count = result.records.len();
-                    save_results(&job_id, &result, formats)?;
+                    save_results(&job_id, url, Some(&label), &result, formats)?;
 
                     let mut fields = Map::new();
                     fields.insert("status".into(), Value::String("completed".into()));

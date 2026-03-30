@@ -27,6 +27,8 @@ pub struct GotoOptions {
     pub wait_until: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referer: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -189,6 +191,7 @@ pub struct ContentPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_request_pattern: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "setExtraHTTPHeaders")]
     pub set_extra_http_headers: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<Vec<Value>>,
@@ -252,6 +255,7 @@ pub struct MarkdownPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_request_pattern: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "setExtraHTTPHeaders")]
     pub set_extra_http_headers: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<Vec<Value>>,
@@ -308,6 +312,7 @@ pub struct SnapshotPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_request_pattern: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "setExtraHTTPHeaders")]
     pub set_extra_http_headers: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<Vec<Value>>,
@@ -387,6 +392,7 @@ pub struct JsonPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_request_pattern: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "setExtraHTTPHeaders")]
     pub set_extra_http_headers: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<Vec<Value>>,
@@ -444,6 +450,7 @@ pub struct LinksPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_request_pattern: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "setExtraHTTPHeaders")]
     pub set_extra_http_headers: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<Vec<Value>>,
@@ -502,6 +509,7 @@ pub struct ScrapePayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_request_pattern: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "setExtraHTTPHeaders")]
     pub set_extra_http_headers: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<Vec<Value>>,

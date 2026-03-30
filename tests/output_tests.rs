@@ -2,10 +2,10 @@ use std::sync::Mutex;
 
 use browserflare::payloads::{CrawlRecord, CrawlResult};
 use browserflare::{
-    diff_crawls, get_statistics, load_result, sanitize_filename, save_pdf, save_results,
+    add_job, diff_crawls, get_statistics, load_result, sanitize_filename, save_pdf, save_results,
     save_screenshot, search_results,
 };
-use serde_json::Map;
+use serde_json::{Map, Value};
 use tempfile::TempDir;
 
 /// Global lock to serialize tests that call set_current_dir (process-global state).
@@ -79,7 +79,8 @@ fn save_and_load_results() {
             make_record("https://b.com", Some("<h1>B</h1>"), None),
         ]);
 
-        let path = save_results("test-job-1", &result, None).unwrap();
+        add_job("test-job-1", "https://a.com", &Value::Null, None).unwrap();
+        let path = save_results("test-job-1", "https://a.com", None, &result, None).unwrap();
         assert!(path.exists());
 
         let loaded = load_result("test-job-1").unwrap().unwrap();
@@ -98,13 +99,12 @@ fn save_results_with_formats() {
         )]);
 
         let formats = vec!["html".to_string(), "markdown".to_string()];
-        save_results("test-job-fmt", &result, Some(&formats)).unwrap();
+        add_job("test-job-fmt", "https://example.com", &Value::Null, None).unwrap();
+        let raw_path = save_results("test-job-fmt", "https://example.com", None, &result, Some(&formats)).unwrap();
 
-        let pages_dir = std::env::current_dir()
-            .unwrap()
-            .join("output")
-            .join("test-job-fmt")
-            .join("pages");
+        // raw_path is output/crawls/{dir_name}/raw.json — parent is the job dir
+        let job_dir = raw_path.parent().unwrap();
+        let pages_dir = job_dir.join("pages");
         assert!(pages_dir.exists());
 
         let entries: Vec<_> = std::fs::read_dir(&pages_dir)
@@ -120,11 +120,7 @@ fn save_results_with_formats() {
         assert!(has_html, "expected .html file in pages dir");
         assert!(has_md, "expected .md file in pages dir");
 
-        let combined = std::env::current_dir()
-            .unwrap()
-            .join("output")
-            .join("test-job-fmt")
-            .join("combined.md");
+        let combined = job_dir.join("combined.md");
         assert!(combined.exists());
     });
 }
@@ -146,7 +142,8 @@ fn search_results_finds_matches() {
             make_record("https://a.com", None, Some("Rust is a systems language")),
             make_record("https://b.com", None, Some("Python is interpreted")),
         ]);
-        save_results("search-job", &result, None).unwrap();
+        add_job("search-job", "https://a.com", &Value::Null, None).unwrap();
+        save_results("search-job", "https://a.com", None, &result, None).unwrap();
 
         let matches = search_results("search-job", "Rust").unwrap();
         assert_eq!(matches.len(), 1);
@@ -163,7 +160,8 @@ fn search_results_case_insensitive() {
             None,
             Some("Hello World"),
         )]);
-        save_results("search-ci", &result, None).unwrap();
+        add_job("search-ci", "https://a.com", &Value::Null, None).unwrap();
+        save_results("search-ci", "https://a.com", None, &result, None).unwrap();
 
         let matches = search_results("search-ci", "hello").unwrap();
         assert_eq!(matches.len(), 1);
@@ -179,7 +177,8 @@ fn statistics_returns_correct_counts() {
             make_record("https://a.com", Some("<h1>A</h1>"), Some("# A")),
             make_record("https://b.com", Some("<h1>B</h1>"), None),
         ]);
-        save_results("stats-job", &result, None).unwrap();
+        add_job("stats-job", "https://a.com", &Value::Null, None).unwrap();
+        save_results("stats-job", "https://a.com", None, &result, None).unwrap();
 
         let stats = get_statistics("stats-job").unwrap().unwrap();
         assert_eq!(stats.job_status, "completed");
@@ -205,8 +204,10 @@ fn diff_crawls_detects_added_and_removed() {
             make_record("https://c.com", None, None),
         ]);
 
-        save_results("diff-a", &result_a, None).unwrap();
-        save_results("diff-b", &result_b, None).unwrap();
+        add_job("diff-a", "https://a.com", &Value::Null, None).unwrap();
+        save_results("diff-a", "https://a.com", None, &result_a, None).unwrap();
+        add_job("diff-b", "https://b.com", &Value::Null, None).unwrap();
+        save_results("diff-b", "https://b.com", None, &result_b, None).unwrap();
 
         let diff = diff_crawls("diff-a", "diff-b").unwrap().unwrap();
         assert_eq!(diff.added, vec!["https://c.com"]);

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
+use chrono::Local;
 use regex::Regex;
 use serde::Serialize;
 use serde_json::Value;
@@ -27,14 +28,26 @@ pub fn sanitize_filename(url: &str) -> String {
 }
 
 pub fn find_result_path(job_id: &str) -> Option<PathBuf> {
-    let new_path = Path::new(OUTPUT_DIR).join(job_id).join("raw.json");
-    if new_path.exists() {
-        return Some(new_path);
+    // New pattern: output/crawls/{slug}_{label}_{timestamp}/raw.json
+    if let Ok(Some(job)) = crate::jobs::find_job(job_id) {
+        if let Some(dir_name) = job.extra.get("output_dir").and_then(|v| v.as_str()) {
+            let path = Path::new(OUTPUT_DIR).join("crawls").join(dir_name).join("raw.json");
+            if path.exists() {
+                return Some(path);
+            }
+        }
     }
 
-    let old_path = Path::new(OUTPUT_DIR).join(format!("{job_id}.json"));
+    // Legacy: output/{job_id}/raw.json
+    let old_path = Path::new(OUTPUT_DIR).join(job_id).join("raw.json");
     if old_path.exists() {
         return Some(old_path);
+    }
+
+    // Even older: output/{job_id}.json
+    let oldest_path = Path::new(OUTPUT_DIR).join(format!("{job_id}.json"));
+    if oldest_path.exists() {
+        return Some(oldest_path);
     }
 
     None
@@ -51,11 +64,26 @@ pub fn load_result(job_id: &str) -> Result<Option<CrawlResult>> {
 
 pub fn save_results(
     job_id: &str,
+    url: &str,
+    label: Option<&str>,
     result: &CrawlResult,
     formats: Option<&[String]>,
 ) -> Result<PathBuf> {
-    let job_dir = Path::new(OUTPUT_DIR).join(job_id);
+    let slug = sanitize_filename(url);
+    let timestamp = Local::now().format("%Y%m%d_%H%M%S");
+    let label_part = label
+        .map(|l| format!("_{}", sanitize_filename(l)))
+        .unwrap_or_default();
+    let dir_name = format!("{slug}{label_part}_{timestamp}");
+
+    let crawls_dir = Path::new(OUTPUT_DIR).join("crawls");
+    let job_dir = crawls_dir.join(&dir_name);
     std::fs::create_dir_all(&job_dir)?;
+
+    // Store output_dir in job record for lookup
+    let mut fields = serde_json::Map::new();
+    fields.insert("output_dir".into(), Value::String(dir_name));
+    let _ = crate::jobs::update_job(job_id, fields);
 
     let raw_path = job_dir.join("raw.json");
     let json_str = serde_json::to_string_pretty(result)?;
